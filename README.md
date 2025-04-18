@@ -1,50 +1,65 @@
-# Welcome to your Expo app 👋
+# CS 467 Capstone Project: Help Save Craigslist
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile-first React Native app built with Expo to enhance the Craigslist experience by providing a cleaner UI and better browsing functionality.
 
-## Get started
+---
 
-1. Install dependencies
+## Project Setup
 
-   ```bash
-   npm install
-   ```
+### 1. Clone the Repository
 
-2. Start the app
+### 2. Install Dependencies
 
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Make sure you have Node.js installed. Then run:
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 3. Start the Development Server
 
-## Learn more
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+This will launch the Expo Developer Tools in your browser and display a QR code.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## Running the App
 
-Join our community of developers creating universal apps.
+After running `npx expo start`, choose one of the following options based on your device:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+### iOS (Physical Device)
+
+1. Install the Expo Go app from the App Store on your iPhone.
+2. Scan the QR code shown in your browser using the iOS Camera app.
+
+**Note:** Your phone must be on the same Wi-Fi network as your computer.
+
+---
+
+### Android (Physical Device)
+
+1. Install the Expo Go app from Google Play.
+2. Scan the QR code in your browser using the QR scanner inside the Expo Go app.
+
+**Note:** Your phone must be on the same Wi-Fi network as your computer.
+
+---
+
+### Web (Browser)
+
+1. Run the following command in your terminal:
+
+   ```bash
+   npm run web
+   ```
+
+2. This will open the app in your default browser at:
+
+   [http://localhost:8081](http://localhost:8081)
+
+**Note:** No QR code scanning is needed.
