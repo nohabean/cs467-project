@@ -36,3 +36,9 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Ignore pytest cache in backend, if you are using pycharm
+/backend/.pytest_cache/
+
+# Ignore file with password in it, refer to sample if you need to create this
+/backend/connection_auth.py
