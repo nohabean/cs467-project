@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -41,6 +42,7 @@ export default function MessagesScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedThread, setSelectedThread] = useState(null);
   const [renameInput, setRenameInput] = useState('');
+  const router = useRouter();
 
   const filteredThreads = threads
     .filter(t => t.name.toLowerCase().includes(search.toLowerCase()))
@@ -84,21 +86,23 @@ export default function MessagesScreen() {
   };
 
   const renderItem = ({ item }) => (
-    <View style={[styles.item, item.pinned && styles.pinned]}>
-      <View style={styles.avatar}>
-        <Text style={styles.avatarText}>
-          {item.name.split(' ').map(w => w[0]).join('').toUpperCase()}
-        </Text>
+    <TouchableOpacity onPress={() => router.push(`/messages/${item.id}?name=${item.name}`)}>
+      <View style={[styles.item, item.pinned && styles.pinned]}>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>
+            {item.name.split(' ').map(w => w[0]).join('').toUpperCase()}
+          </Text>
+        </View>
+        <View style={styles.content}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.message}>{item.message}</Text>
+          <Text style={styles.date}>{new Date(item.date).toLocaleDateString()}</Text>
+        </View>
+        <TouchableOpacity onPress={() => openModal(item)}>
+          <MaterialIcons name="more-vert" size={24} color="#fff" />
+        </TouchableOpacity>
       </View>
-      <View style={styles.content}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.message}>{item.message}</Text>
-        <Text style={styles.date}>{new Date(item.date).toLocaleDateString()}</Text>
-      </View>
-      <TouchableOpacity onPress={() => openModal(item)}>
-        <MaterialIcons name="more-vert" size={24} color="#fff" />
-      </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -268,5 +272,5 @@ const styles = StyleSheet.create({
   },
   bold: {
     fontWeight: 'bold',
-  },
+  }
 });
