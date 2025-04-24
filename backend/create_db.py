@@ -1,6 +1,9 @@
-import os
+import os, platform
 # point Python at your local Postgres DLLs
-os.add_dll_directory(r"C:\Program Files\PostgreSQL\17\bin")
+
+if platform.system() == "Windows":
+    os.add_dll_directory(r"C:\Program Files\PostgreSQL\17\bin")
+# Feel free to modify the import statements to work with your OS
 
 import psycopg2
 from psycopg2 import OperationalError
@@ -12,7 +15,7 @@ DB_PORT = 5432
 DB_NAME = "postgres"
 DB_USER = "postgres"
 
-# Note: You need to whitelist your IP
+# Note: You need to whitelist your IP, I will likely remove this requirement
 
 def connection_test():
     try:
@@ -92,10 +95,12 @@ def create_database():
             id SERIAL PRIMARY KEY NOT NULL,
             filename VARCHAR(255) NOT NULL,
             listing_id INTEGER NOT NULL,
+            upload_username VARCHAR(50),
             is_primary BOOLEAN NOT NULL DEFAULT false,
             created_datetime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_datetime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (listing_id) REFERENCES listing(id)
+            FOREIGN KEY (listing_id) REFERENCES listing(id),
+            FOREIGN KEY (upload_username) REFERENCES users(username)
         );
         ''')
         print("Images table created successfully!")
@@ -154,7 +159,7 @@ def create_database():
         print("Error creating tables:")
         print(e)
 
-def drop__and_create_tables():
+def drop_and_create_tables():
     try:
         # Connect to PostgreSQL
         conn = psycopg2.connect(
@@ -198,5 +203,5 @@ def drop__and_create_tables():
 
 if __name__ == "__main__":
     # Uncomment the line below to drop all tables and recreate them
-    # drop_all_tables()
-    create_database()
+    drop_and_create_tables()
+    #create_database()
