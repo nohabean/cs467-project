@@ -1,6 +1,7 @@
-import { StyleSheet, Text, SafeAreaView, View, TouchableOpacity, TextInput, FlatList, Image } from 'react-native';
+import { StyleSheet, SafeAreaView, View, TouchableOpacity, TextInput, FlatList, Image, RefreshControl } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState} from 'react';
+import { useState } from 'react';
+import ProductCard from '../ProductCard';
 
 const products = [
   {
@@ -43,18 +44,32 @@ const products = [
 
 export default function Index() {
   const [inputTerm, setInputTerm] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleSearch = () => {
     // Testing search functionality
     console.log('Search term:', inputTerm);
   }
 
+  const handleRefresh = () => {
+    // Testing refresh functionality
+    console.log('Refreshing...');
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
       <View style={styles.header}>
         <View style={styles.searchContainer}>
           <View style={styles.search}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              accessibilityLabel="search button"
+              accessibilityRole="button"
+              onPress={() => {/* placeholder functionality */}}
+            >
               <Ionicons name="search" size={24} color="black" style={{ marginRight: 8 }}/>
             </TouchableOpacity>
 
@@ -65,9 +80,15 @@ export default function Index() {
               value={inputTerm}
               onChangeText={setInputTerm}
               onSubmitEditing={handleSearch}
+              returnKeyType="search"
+              autoCapitalize="none"
             />
 
-            <TouchableOpacity>
+            <TouchableOpacity
+              accessibilityLabel="filter button"
+              accessibilityRole="button"
+              onPress={() => {/* placeholder functionality */}}
+            >
               <Ionicons name="filter" size={24} color="black" style={{ marginLeft: 8 }}/>
             </TouchableOpacity>
           </View>
@@ -79,29 +100,13 @@ export default function Index() {
         data={products}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.cardWrapper}
-            onPress={() => {
-              // placeholder functionality
-            }}>
-            <View style={styles.card}>
-              <View style={styles.cardTop}>
-                <Image
-                  alt="Product picture on white background."
-                  resizeMode="cover"
-                  style={styles.cardImage}
-                  source={{ uri: item.image}}
-                />
-              </View>
-              <View style={styles.cardBody}>
-                <View style={styles.cardHeader}>
-                  <Text style={styles.cardTitle}>{item.title}</Text>
-                  <Text style={styles.cardPrice}>${item.price}</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
+          <ProductCard
+            product={item}
+            onPress={() => { /* placeholder functionality */}}
+          />
         )}
       />
     </SafeAreaView>
@@ -117,14 +122,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   searchContainer: {
-    marginVertical: 6,
   },
   search: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
     borderWidth: 1,
+    borderColor: '#ccc',
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
@@ -133,45 +137,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 6,
     marginHorizontal: 8,
-  },
-  cardWrapper: {
-    flex: 1,
-    marginHorizontal: 4,
-    marginBottom: 16,
-  },
-  card: {
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    shadowColor: 'rgba(0, 0, 0, 0.5)',
-    shadowOffset: { width: 0, height: 1},
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-  },
-  cardTop: {
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-  },
-  cardImage: {
-    width: '100%',
-    height: 160,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-  },
-  cardBody: {
-    padding: 12,
-  },
-  cardHeader: {
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: 'black',
-  },
-  cardPrice: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: 'black',
   }
 })
