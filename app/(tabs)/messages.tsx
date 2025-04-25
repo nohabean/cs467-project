@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Keyboard,
-} from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import NotFoundScreen from '../+not-found';
 
@@ -19,34 +10,20 @@ const placeholderThreads = [
   { id: '3', name: 'Charlie Nguyen', message: 'Do you accept PayPal for the camera?', date: '2025-04-20T09:15:00Z', pinned: false },
   { id: '4', name: 'Dana Lopez', message: 'Is the bike in good condition? Can I pick it up today?', date: '2025-04-21T10:00:00Z', pinned: false },
   { id: '5', name: 'Evan Walker', message: 'Will you sell the table for $50?', date: '2025-04-19T17:45:00Z', pinned: false },
-  { id: '6', name: 'Fay Kim', message: 'I’m interested in the phone, is it unlocked?', date: '2025-04-18T08:00:00Z', pinned: false },
-  { id: '7', name: 'Gina Torres', message: 'Can I get more pictures of the shoes?', date: '2025-04-17T16:20:00Z', pinned: false },
-  { id: '8', name: 'Henry Cho', message: 'Is the vintage guitar still available?', date: '2025-04-15T11:30:00Z', pinned: false },
-  { id: '9', name: 'Ivy Lee', message: 'What’s the condition of the blender? Still working well?', date: '2025-04-14T13:45:00Z', pinned: false },
-  { id: '10', name: 'Jack Wilson', message: 'Do you have the receipt for the microwave?', date: '2025-04-13T10:30:00Z', pinned: false },
-  { id: '11', name: 'Kara Brooks', message: 'How old is the washing machine? Can you deliver it?', date: '2025-04-12T12:00:00Z', pinned: false },
-  { id: '12', name: 'Liam Harris', message: 'Still available? What’s the lowest price you’ll accept?', date: '2025-04-11T14:00:00Z', pinned: false },
-  { id: '13', name: 'Mona Patel', message: 'Do you ship to my area?', date: '2025-04-10T09:30:00Z', pinned: false },
-  { id: '14', name: 'Nina Roberts', message: 'I’m interested in the bookshelves. Can you confirm the dimensions?', date: '2025-04-09T15:00:00Z', pinned: false },
-  { id: '15', name: 'Oscar Green', message: 'Can you meet me halfway for the microwave?', date: '2025-04-08T11:15:00Z', pinned: false },
-  { id: '16', name: 'Paulina Zhang', message: 'The lamp looks great! Does it come with a warranty?', date: '2025-04-07T08:45:00Z', pinned: false },
-  { id: '17', name: 'Quincy Ford', message: 'Are the earrings in their original box?', date: '2025-04-06T17:30:00Z', pinned: false },
-  { id: '18', name: 'Rachel Harris', message: 'I’d like to buy the drone, what’s the condition?', date: '2025-04-05T14:00:00Z', pinned: false },
-  { id: '19', name: 'Steve Thompson', message: 'Do you accept cash on delivery for the TV?', date: '2025-04-04T12:45:00Z', pinned: false },
-  { id: '20', name: 'Tina Moore', message: 'How much for the vintage bicycle if I pick it up today?', date: '2025-04-03T16:00:00Z', pinned: false }
 ];
 
+// all warnings to be corrected when linking to actual DB
 export default function MessagesScreen() {
   const [threads, setThreads] = useState(placeholderThreads);
-  const [search, setSearch] = useState('');
+  const [messageSearch, setMessageSearch] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedThread, setSelectedThread] = useState(null);
   const [renameInput, setRenameInput] = useState('');
   const router = useRouter();
 
   const filteredThreads = threads
-    .filter(t => t.name.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => (a.pinned === b.pinned ? new Date(b.date) - new Date(a.date) : a.pinned ? -1 : 1));
+    .filter(t => t.name.toLowerCase().includes(messageSearch.toLowerCase()))
+    .sort((a, b) => (a.pinned === b.pinned ? new Date(b.date) - new Date(a.date) : a.pinned ? -1 : 1)); 
 
   const openModal = (thread) => {
     setSelectedThread(thread);
@@ -88,7 +65,7 @@ export default function MessagesScreen() {
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => router.push(`/messages/${item.id}?name=${item.name}`)}>
       <View style={[styles.item, item.pinned && styles.pinned]}>
-        <View style={styles.avatar}>
+        <View style={styles.messageAvatar}>
           <Text style={styles.avatarText}>
             {item.name.split(' ').map(w => w[0]).join('').toUpperCase()}
           </Text>
@@ -111,9 +88,9 @@ export default function MessagesScreen() {
         <TextInput
           placeholder="Search messages..."
           placeholderTextColor="#aaa"
-          style={styles.search}
-          value={search}
-          onChangeText={setSearch}
+          style={styles.messageSearch}
+          value={messageSearch}
+          onChangeText={setMessageSearch}
         />
         <FlatList
           data={filteredThreads}
@@ -168,13 +145,14 @@ export default function MessagesScreen() {
   );
 }
 
+// to be moved to styles later
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#25292e',
     paddingTop: 10,
   },
-  search: {
+  messageSearch: {
     marginHorizontal: 12,
     marginBottom: 10,
     padding: 10,
@@ -193,7 +171,7 @@ const styles = StyleSheet.create({
   pinned: {
     backgroundColor: '#ad5ff5',
   },
-  avatar: {
+  messageAvatar: {
     width: 46,
     height: 46,
     borderRadius: 23,
