@@ -4,6 +4,7 @@ import { useLayoutEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { products } from '../shared/mockProducts';
 import { sellers } from '../shared/mockSellers';
+import fallbackImage from '../../assets/images/fallback.png';
 
 export default function ProductDetail() {
     const navigation = useNavigation();
@@ -15,11 +16,11 @@ export default function ProductDetail() {
         navigation.setOptions({
             title: '',
             headerRight: () => (
-                <View style={{ flexDirection: 'row', gap: 16, marginRight: 12 }}>
-                    <TouchableOpacity onPress={handleShare}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={handleShare} accessibilityLabel="Share product listing" accessibilityRole="button">
                         <Ionicons name="share-outline" size={24} color="black" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={handleFavorite}>
+                    <TouchableOpacity onPress={handleFavorite} accessibilityLabel="Favorite product listing" accessibilityRole="button">
                         <Ionicons name="heart-outline" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
@@ -48,7 +49,7 @@ export default function ProductDetail() {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Image source={{ uri: product.image }} style={styles.image} />
+            <Image source={{ uri: product.image }} style={styles.image} defaultSource={fallbackImage} accessibilityLabel={`Image of ${product.title}`} />
             <Text style={styles.title}>{product.title}</Text>
             <Text style={styles.price}>${product.price.toFixed(2)}</Text>
 
@@ -72,7 +73,7 @@ export default function ProductDetail() {
             <Text style={styles.label}>Seller Info</Text>
             {seller ? (
                 <View style={styles.sellerInfoRow}>
-                    <Image source={{ uri: seller.image }} style={styles.sellerImage} />
+                    <Image source={{ uri: seller.image }} style={styles.sellerImage} defaultSource={fallbackImage} accessibilityLabel={`Image of ${seller.name}`} />
                     <View style={styles.sellerDetailsContainer}>
                         <Text style={styles.sellerName}>{seller.name}</Text>
                         <Text style={styles.sellerMeta}>
@@ -80,11 +81,10 @@ export default function ProductDetail() {
                         </Text>
                         <Text style={styles.sellerMeta}>{seller.location}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => console.log('handleSellerInfo() called')}>
+                    <TouchableOpacity onPress={() => console.log('handleSellerInfo() called')} accessibilityLabel="View seller info" accessibilityRole="button">
                         <Ionicons name="information-circle-outline" size={24} color="#555" style={{ marginLeft: 8 }} />
                     </TouchableOpacity>
                 </View>
-
             ) : (
                 <Text style={styles.text}>Seller not found.</Text>
             )}
@@ -93,6 +93,11 @@ export default function ProductDetail() {
 }
 
 const styles = StyleSheet.create({
+    header: {
+        flexDirection: 'row',
+        gap: 16,
+        marginRight: 12
+    },
     container: {
         padding: 20,
     },

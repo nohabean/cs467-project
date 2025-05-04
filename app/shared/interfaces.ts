@@ -14,6 +14,9 @@ export interface ProductListing {
   condition: "New" | "Like New" | "Good" | "Fair" | "Poor";
   location: string;
   isSold: boolean;
+
+  // temporary attribute
+  image?: string;
 }
 
 export interface User {
