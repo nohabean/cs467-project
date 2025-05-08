@@ -83,16 +83,25 @@ export default function MessageThreadScreen() {
 
   return (
     <View style={styles.container} accessibilityRole="summary" accessibilityLabel={`Message thread with ${name ?? 'user'}`}>
-      <ScrollView style={styles.messagesContainer}>
+      <ScrollView style={styles.messagesContainer} accessibilityRole="list" accessible>
         {messages.length === 0 ? (
-          <Text style={styles.noMessagesText}>No messages yet.</Text>
+          <Text style={styles.noMessagesText} accessibilityRole="alert">
+            No messages yet.
+          </Text>
         ) : (
           messages.map((message) => (
             <View key={message.id} style={styles.messageContainer}>
-              <Text style={[styles.senderName, message.myMessage ? styles.mySenderName : styles.otherSenderName]}>
+              <Text
+                style={[styles.senderName, message.myMessage ? styles.mySenderName : styles.otherSenderName]}
+                accessibilityRole="text"
+              >
                 {message.myMessage ? 'You' : name || 'Buyer'}
               </Text>
-              <View style={[styles.message, message.myMessage ? styles.myMessage : styles.otherMessage]}>
+              <View
+                style={[styles.message, message.myMessage ? styles.myMessage : styles.otherMessage]}
+                accessibilityRole="text"
+                accessibilityLabel={message.text}
+              >
                 <Text style={styles.text}>{message.text}</Text>
               </View>
               {message.timestamp && (
@@ -101,6 +110,8 @@ export default function MessageThreadScreen() {
                     styles.timestamp,
                     message.myMessage ? styles.timestampRight : styles.timestampLeft,  // Conditional alignment
                   ]}
+                  accessibilityRole="text"
+                  accessibilityLabel={`Sent at ${message.timestamp}`}
                 >
                   {message.timestamp}
                 </Text>
@@ -119,8 +130,14 @@ export default function MessageThreadScreen() {
           placeholder="Type a message..."
           placeholderTextColor="#aaa"
           onFocus={handleFocus}
+          accessibilityLabel="Type a new message"
         />
-        <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+        <TouchableOpacity
+          onPress={handleSendMessage}
+          style={styles.sendButton}
+          accessibilityLabel="Send message"
+          accessibilityRole="button"
+        >
           <MaterialIcons name="send" size={16} color="#fff" />
         </TouchableOpacity>
       </View>
