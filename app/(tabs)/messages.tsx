@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -83,65 +84,71 @@ export default function MessagesScreen() {
   );
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <TextInput
-          placeholder="Search messages..."
-          placeholderTextColor="#aaa"
-          style={styles.messageSearch}
-          value={messageSearch}
-          onChangeText={setMessageSearch}
-        />
-        <FlatList
-          data={filteredThreads}
-          keyExtractor={item => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          showsVerticalScrollIndicator={false}
-        />
-
-        {modalVisible && (
-          <TouchableWithoutFeedback onPress={closeModal}>
-            <View style={styles.modalOverlay}>
-              <TouchableWithoutFeedback>
-                <View style={styles.modal}>
-                  <TouchableOpacity onPress={closeModal} style={styles.closeIcon}>
-                    <MaterialIcons name="close" size={24} color="black" />
-                  </TouchableOpacity>
-                  <Text style={styles.modalTitle}>Manage Thread</Text>
-                  {selectedThread && (
-                    <>
-                      <Text style={styles.modalThreadName}>{selectedThread.name}</Text>
-                      <TextInput
-                        style={styles.modalInput}
-                        value={renameInput}
-                        onChangeText={setRenameInput}
-                        placeholder="New name"
-                      />
-                      <View style={styles.modalActions}>
-                        <TouchableOpacity onPress={handleRename}>
-                          <Text style={[styles.modalButton, styles.bold]}>Save</Text>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.modalActions}>
-                        <TouchableOpacity onPress={handleTogglePin}>
-                          <Text style={styles.modalButton}>
-                            {selectedThread.pinned ? 'Unpin' : 'Pin'}
-                          </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={handleDelete}>
-                          <Text style={[styles.modalButton, { color: 'red' }]}>Delete</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </>
-                  )}
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableWithoutFeedback>
-        )}
-      </View>
-    </TouchableWithoutFeedback>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={80}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <TextInput
+            placeholder="Search messages..."
+            placeholderTextColor="#aaa"
+            style={styles.messageSearch}
+            value={messageSearch}
+            onChangeText={setMessageSearch}
+          />
+          <FlatList
+            data={filteredThreads}
+            keyExtractor={item => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
+          />
+  
+          {modalVisible && (
+            <TouchableWithoutFeedback onPress={closeModal}>
+              <View style={styles.modalOverlay}>
+                <TouchableWithoutFeedback>
+                  <View style={styles.modal}>
+                    <TouchableOpacity onPress={closeModal} style={styles.closeIcon}>
+                      <MaterialIcons name="close" size={24} color="black" />
+                    </TouchableOpacity>
+                    <Text style={styles.modalTitle}>Manage Thread</Text>
+                    {selectedThread && (
+                      <>
+                        <Text style={styles.modalThreadName}>{selectedThread.name}</Text>
+                        <TextInput
+                          style={styles.modalInput}
+                          value={renameInput}
+                          onChangeText={setRenameInput}
+                          placeholder="New name"
+                        />
+                        <View style={styles.modalActions}>
+                          <TouchableOpacity onPress={handleRename}>
+                            <Text style={[styles.modalButton, styles.bold]}>Save</Text>
+                          </TouchableOpacity>
+                        </View>
+                        <View style={styles.modalActions}>
+                          <TouchableOpacity onPress={handleTogglePin}>
+                            <Text style={styles.modalButton}>
+                              {selectedThread.pinned ? 'Unpin' : 'Pin'}
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={handleDelete}>
+                            <Text style={[styles.modalButton, { color: 'red' }]}>Delete</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </>
+                    )}
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+            </TouchableWithoutFeedback>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
