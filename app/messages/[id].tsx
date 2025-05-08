@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 // null error to be fixed when actual data from DB is being loaded
 export default function MessageThreadScreen() {
@@ -76,7 +77,7 @@ export default function MessageThreadScreen() {
           onFocus={handleFocus}
         />
         <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-          <Text style={styles.sendButtonText}>Send</Text>
+          <MaterialIcons name="send" size={16} />
         </TouchableOpacity>
       </View>
     </View>
@@ -154,7 +155,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ad5ff5',
     paddingVertical: 10,
     paddingHorizontal: 16,
-    borderRadius: 20
+    borderRadius: 20,
+    color: '#000'
   },
   sendButtonText: {
     color: '#fff',
