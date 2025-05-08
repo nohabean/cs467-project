@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, 
+  Keyboard, KeyboardAvoidingView, Platform} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import NotFoundScreen from '../+not-found';
 
@@ -13,7 +13,6 @@ const placeholderThreads = [
   { id: '5', name: 'Evan Walker', message: 'Will you sell the table for $50?', date: '2025-04-19T17:45:00Z', pinned: false },
 ];
 
-// all warnings to be corrected when linking to actual DB
 export default function MessagesScreen() {
   const [threads, setThreads] = useState(placeholderThreads);
   const [messageSearch, setMessageSearch] = useState('');
@@ -24,7 +23,7 @@ export default function MessagesScreen() {
 
   const filteredThreads = threads
     .filter(t => t.name.toLowerCase().includes(messageSearch.toLowerCase()))
-    .sort((a, b) => (a.pinned === b.pinned ? new Date(b.date) - new Date(a.date) : a.pinned ? -1 : 1)); 
+    .sort((a, b) => (a.pinned === b.pinned ? new Date(b.date) - new Date(a.date) : a.pinned ? -1 : 1));
 
   const openModal = (thread) => {
     setSelectedThread(thread);
@@ -64,19 +63,33 @@ export default function MessagesScreen() {
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => router.push(`/messages/${item.id}?name=${item.name}`)}>
+    <TouchableOpacity
+      onPress={() => router.push(`/messages/${item.id}?name=${item.name}`)}
+      accessibilityRole="button"
+      accessibilityLabel={`Open conversation with ${item.name}`}
+    >
       <View style={[styles.item, item.pinned && styles.pinned]}>
-        <View style={styles.messageAvatar}>
+        <View
+          style={styles.messageAvatar}
+          accessibilityRole="image"
+          accessibilityLabel={`Avatar for ${item.name}`}
+        >
           <Text style={styles.avatarText}>
             {item.name.split(' ').map(w => w[0]).join('').toUpperCase()}
           </Text>
         </View>
         <View style={styles.content}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.message}>{item.message}</Text>
-          <Text style={styles.date}>{new Date(item.date).toLocaleDateString()}</Text>
+          <Text style={styles.name} accessibilityRole="text">{item.name}</Text>
+          <Text style={styles.message} accessibilityRole="text">{item.message}</Text>
+          <Text style={styles.date} accessibilityRole="text">
+            {new Date(item.date).toLocaleDateString()}
+          </Text>
         </View>
-        <TouchableOpacity onPress={() => openModal(item)}>
+        <TouchableOpacity
+          onPress={() => openModal(item)}
+          accessibilityRole="button"
+          accessibilityLabel={`Manage options for conversation with ${item.name}`}
+        >
           <MaterialIcons name="more-vert" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -97,6 +110,7 @@ export default function MessagesScreen() {
             style={styles.messageSearch}
             value={messageSearch}
             onChangeText={setMessageSearch}
+            accessibilityLabel="Search messages input"
           />
           <FlatList
             data={filteredThreads}
@@ -104,38 +118,65 @@ export default function MessagesScreen() {
             renderItem={renderItem}
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
+            accessibilityLabel="List of message threads"
           />
-  
+
           {modalVisible && (
             <TouchableWithoutFeedback onPress={closeModal}>
               <View style={styles.modalOverlay}>
                 <TouchableWithoutFeedback>
-                  <View style={styles.modal}>
-                    <TouchableOpacity onPress={closeModal} style={styles.closeIcon}>
+                  <View
+                    style={styles.modal}
+                    accessibilityLabel="Thread management modal"
+                  >
+                    <TouchableOpacity
+                      onPress={closeModal}
+                      style={styles.closeIcon}
+                      accessibilityRole="button"
+                      accessibilityLabel="Close modal"
+                    >
                       <MaterialIcons name="close" size={24} color="black" />
                     </TouchableOpacity>
-                    <Text style={styles.modalTitle}>Manage Thread</Text>
+                    <Text style={styles.modalTitle} accessibilityRole="header">Manage Thread</Text>
                     {selectedThread && (
                       <>
-                        <Text style={styles.modalThreadName}>{selectedThread.name}</Text>
+                        <Text
+                          style={styles.modalThreadName}
+                          accessibilityRole="text"
+                        >
+                          {selectedThread.name}
+                        </Text>
                         <TextInput
                           style={styles.modalInput}
                           value={renameInput}
                           onChangeText={setRenameInput}
                           placeholder="New name"
+                          accessibilityLabel="Rename thread input"
                         />
                         <View style={styles.modalActions}>
-                          <TouchableOpacity onPress={handleRename}>
+                          <TouchableOpacity
+                            onPress={handleRename}
+                            accessibilityRole="button"
+                            accessibilityLabel="Save new thread name"
+                          >
                             <Text style={[styles.modalButton, styles.bold]}>Save</Text>
                           </TouchableOpacity>
                         </View>
                         <View style={styles.modalActions}>
-                          <TouchableOpacity onPress={handleTogglePin}>
+                          <TouchableOpacity
+                            onPress={handleTogglePin}
+                            accessibilityRole="button"
+                            accessibilityLabel={selectedThread.pinned ? 'Unpin thread' : 'Pin thread'}
+                          >
                             <Text style={styles.modalButton}>
                               {selectedThread.pinned ? 'Unpin' : 'Pin'}
                             </Text>
                           </TouchableOpacity>
-                          <TouchableOpacity onPress={handleDelete}>
+                          <TouchableOpacity
+                            onPress={handleDelete}
+                            accessibilityRole="button"
+                            accessibilityLabel="Delete thread"
+                          >
                             <Text style={[styles.modalButton, { color: 'red' }]}>Delete</Text>
                           </TouchableOpacity>
                         </View>
@@ -152,7 +193,6 @@ export default function MessagesScreen() {
   );
 }
 
-// to be moved to styles later
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -173,7 +213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    marginVertical: 0
+    marginVertical: 0,
   },
   pinned: {
     backgroundColor: '#ad5ff5',
@@ -257,5 +297,5 @@ const styles = StyleSheet.create({
   },
   bold: {
     fontWeight: 'bold',
-  }
+  },
 });
