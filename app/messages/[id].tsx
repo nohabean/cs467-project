@@ -1,9 +1,8 @@
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, AccessibilityRole } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
-// null error to be fixed when actual data from DB is being loaded
 export default function MessageThreadScreen() {
   const { id, name } = useLocalSearchParams();
   const navigation = useNavigation();
@@ -14,7 +13,7 @@ export default function MessageThreadScreen() {
     { id: 4, text: 'I am available anytime after 5. We can meet at the police station. Cash is fine.', myMessage: true, timestamp: '4/24/2025 10:15 AM' }
   ]);
   const [newMessage, setNewMessage] = useState('');
-  const inputRef = useRef(null); 
+  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     if (name) {
@@ -42,14 +41,19 @@ export default function MessageThreadScreen() {
   };
 
   const handleFocus = () => {
-    inputRef.current.focus();
+    inputRef.current?.focus();
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.messagesContainer}>
+    <View style={styles.container} accessibilityRole="summary" accessibilityLabel={`Message thread with ${name ?? 'user'}`}>
+      <View style={styles.messagesContainer} accessibilityRole="list" accessibilityLabel="Message list">
         {messages.map((message) => (
-          <View key={message.id} style={styles.messageContainer}>
+          <View
+            key={message.id}
+            style={styles.messageContainer}
+            accessibilityRole="text"
+            accessibilityLabel={`${message.myMessage ? 'You' : name}: ${message.text}. Sent at ${message.timestamp}`}
+          >
             <Text
               style={[
                 styles.senderName,
@@ -65,8 +69,8 @@ export default function MessageThreadScreen() {
           </View>
         ))}
       </View>
-      
-      <View style={styles.inputContainer}>
+
+      <View style={styles.inputContainer} accessibilityLabel="Message input area">
         <TextInput
           ref={inputRef}
           style={styles.input}
@@ -75,17 +79,22 @@ export default function MessageThreadScreen() {
           placeholder="Type a message..."
           placeholderTextColor="#aaa"
           onFocus={handleFocus}
+          accessibilityLabel="Type your message"
+          accessibilityHint="Double tap to type your message"
         />
-        <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-          <MaterialIcons name="send" size={16} />
+        <TouchableOpacity
+          onPress={handleSendMessage}
+          style={styles.sendButton}
+          accessibilityRole="button"
+          accessibilityLabel="Send message"
+        >
+          <MaterialIcons name="send" size={16} color="#fff" />
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-
-// syles to be moved later
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -155,8 +164,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ad5ff5',
     paddingVertical: 10,
     paddingHorizontal: 16,
-    borderRadius: 20,
-    color: '#000'
+    borderRadius: 20
   },
   sendButtonText: {
     color: '#fff',
