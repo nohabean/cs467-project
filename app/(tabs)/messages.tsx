@@ -13,19 +13,28 @@ const placeholderThreads = [
   { id: '5', name: 'Evan Walker', message: 'Will you sell the table for $50?', date: '2025-04-19T17:45:00Z', pinned: false },
 ];
 
+type Thread = {
+  id: string;
+  name: string;
+  message: string;
+  date: string;
+  pinned: boolean;
+};
+
 export default function MessagesScreen() {
-  const [threads, setThreads] = useState(placeholderThreads);
+  const [threads, setThreads] = useState<Thread[]>(placeholderThreads);
+  const [selectedThread, setSelectedThread] = useState<Thread | null>(null);
   const [messageSearch, setMessageSearch] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedThread, setSelectedThread] = useState(null);
   const [renameInput, setRenameInput] = useState('');
   const router = useRouter();
 
   const filteredThreads = threads
     .filter(t => t.name.toLowerCase().includes(messageSearch.toLowerCase()))
-    .sort((a, b) => (a.pinned === b.pinned ? new Date(b.date) - new Date(a.date) : a.pinned ? -1 : 1));
+    .sort((a, b) => (
+      a.pinned === b.pinned ? new Date(b.date).getTime() - new Date(a.date).getTime() : a.pinned ? -1 : 1 ));
 
-  const openModal = (thread) => {
+  const openModal = (thread: Thread) => {
     setSelectedThread(thread);
     setRenameInput(thread.name);
     setModalVisible(true);
@@ -62,7 +71,7 @@ export default function MessagesScreen() {
     }
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: Thread }) => (
     <TouchableOpacity
       onPress={() => router.push(`/messages/${item.id}?name=${item.name}`)}
       accessibilityRole="button"
@@ -75,7 +84,7 @@ export default function MessagesScreen() {
           accessibilityLabel={`Avatar for ${item.name}`}
         >
           <Text style={styles.avatarText}>
-            {item.name.split(' ').map(w => w[0]).join('').toUpperCase()}
+            {item.name.split(' ').map((w: string) => w[0]).join('').toUpperCase()}
           </Text>
         </View>
         <View style={styles.content}>
