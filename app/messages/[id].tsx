@@ -94,8 +94,17 @@ export default function MessageThreadScreen() {
               </Text>
               <View style={[styles.message, message.myMessage ? styles.myMessage : styles.otherMessage]}>
                 <Text style={styles.text}>{message.text}</Text>
-                {message.timestamp && <Text style={styles.timestamp}>{message.timestamp}</Text>}
               </View>
+              {message.timestamp && (
+                <Text
+                  style={[
+                    styles.timestamp,
+                    message.myMessage ? styles.timestampRight : styles.timestampLeft,  // Conditional alignment
+                  ]}
+                >
+                  {message.timestamp}
+                </Text>
+              )}
             </View>
           ))
         )}
@@ -133,7 +142,7 @@ const styles = StyleSheet.create({
   },
   message: {
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 15,
     marginBottom: 0,
     maxWidth: '80%',
   },
@@ -153,7 +162,16 @@ const styles = StyleSheet.create({
     color: '#bbb',
     fontSize: 12,
     marginTop: 4,
-    textAlign: 'right',
+    
+    textAlign: 'left', 
+  },
+  timestampLeft: {
+    textAlign: 'left', 
+    marginLeft: 10
+  },
+  timestampRight: {
+    textAlign: 'right', 
+    marginRight: 10
   },
   senderName: {
     fontSize: 14,
@@ -163,9 +181,11 @@ const styles = StyleSheet.create({
   },
   mySenderName: {
     textAlign: 'right',
+    marginRight: 10
   },
   otherSenderName: {
     textAlign: 'left',
+    marginLeft: 10
   },
   inputContainer: {
     flexDirection: 'row',
@@ -181,14 +201,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: '#505050',
     color: '#fff',
-    borderRadius: 20,
+    borderRadius: 15,
   },
   sendButton: {
     marginLeft: 8,
     backgroundColor: '#ad5ff5',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: 'center', 
+    alignItems: 'center',
+    borderRadius: 15,
   },
   sendButtonText: {
     color: '#fff',

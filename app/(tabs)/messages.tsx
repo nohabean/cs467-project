@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import {
   View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet,
-  TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform
+  TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, Image
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { mockMessages } from '../shared/mockMessages';
@@ -16,6 +16,7 @@ type Thread = {
   message: string;
   date: string;
   pinned: boolean;
+  image?: string;
 };
 
 export default function MessagesScreen() {
@@ -35,6 +36,7 @@ export default function MessagesScreen() {
         const otherUser = msg.sender === CURRENT_USER ? msg.recipient : msg.sender;
         const otherUserDetails = sellers.find(user => user.username === otherUser);
         const userName = otherUserDetails ? otherUserDetails.name || otherUser : otherUser;
+        const image = otherUserDetails?.image;
 
         if (!existingThread || new Date(msg.sent_datetime) > new Date(existingThread.date)) {
           groupedThreads[key] = {
@@ -43,6 +45,7 @@ export default function MessagesScreen() {
             message: msg.message_body,
             date: msg.sent_datetime,
             pinned: false,
+            image,
           };
         }
       });
@@ -71,16 +74,20 @@ export default function MessagesScreen() {
     >
       <View style={[styles.item, item.pinned && styles.pinned]}>
         <View style={styles.messageAvatar}>
-          <Text style={styles.avatarText}>
-            {item.name.split(' ').map((w) => w[0]).join('').toUpperCase()}
-          </Text>
+          {item.image ? (
+            <Image source={{ uri: item.image }} style={styles.avatarImage} />
+          ) : (
+            <Text style={styles.avatarText}>
+              {item.name.split(' ').map((w) => w[0]).join('').toUpperCase()}
+            </Text>
+          )}
         </View>
         <View style={styles.content}>
           <Text style={styles.name}>{item.name}</Text>
           <Text style={styles.message}>{item.message}</Text>
           <Text style={styles.date}>{new Date(item.date).toLocaleDateString()}</Text>
         </View>
-        <TouchableOpacity onPress={() => { /* future menu */ }}>
+        <TouchableOpacity onPress={() => { /* menu actions */ }}>
           <MaterialIcons name="more-vert" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -147,7 +154,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#5c5f66',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12
+    marginRight: 12,
+    overflow: 'hidden'
+  },
+  avatarImage: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    resizeMode: 'cover'
   },
   avatarText: {
     fontWeight: '600',
@@ -171,50 +185,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#bbb',
     marginTop: 2
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0, bottom: 0, left: 0, right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end'
-  },
-  modal: {
-    backgroundColor: '#fff',
-    padding: 20,
-    width: '100%'
-  },
-  closeIcon: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1
-  },
-  modalTitle: {
-    fontWeight: '600',
-    fontSize: 18,
-    marginBottom: 10
-  },
-  modalThreadName: {
-    fontWeight: '600',
-    fontSize: 16,
-    marginBottom: 10
-  },
-  modalInput: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#aaa',
-    marginTop: 10,
-    fontSize: 16
-  },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20
-  },
-  modalButton: {
-    fontSize: 16,
-    color: '#000'
-  },
-  bold: {
-    fontWeight: '600'
   }
 });
