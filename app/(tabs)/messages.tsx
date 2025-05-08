@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#25292e',
-    paddingTop: 10,
+    paddingTop: 10
   },
   messageSearch: {
     marginHorizontal: 12,
@@ -215,17 +215,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#3a3f47',
     color: '#fff',
     borderRadius: 8,
-    fontSize: 16,
+    fontSize: 16
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    marginVertical: 0,
+    marginVertical: 0
   },
   pinned: {
-    backgroundColor: '#ad5ff5',
+    backgroundColor: '#ad5ff5'
   },
   messageAvatar: {
     width: 46,
@@ -234,30 +234,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#5c5f66',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 12
   },
   avatarText: {
-    fontWeight: 'bold',
+    fontWeight: 600,
     fontSize: 15,
-    color: '#fff',
+    color: '#fff'
   },
   content: {
-    flex: 1,
+    flex: 1
   },
   name: {
     fontWeight: '600',
     fontSize: 15,
-    color: '#fff',
+    color: '#fff'
   },
   message: {
     color: '#ddd',
     fontSize: 14,
-    marginTop: 2,
+    marginTop: 2
   },
   date: {
     fontSize: 12,
     color: '#bbb',
-    marginTop: 2,
+    marginTop: 2
   },
   modalOverlay: {
     position: 'absolute',
@@ -266,45 +266,45 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   modal: {
     backgroundColor: '#fff',
     padding: 20,
-    width: '100%',
+    width: '100%'
   },
   closeIcon: {
     position: 'absolute',
     top: 10,
     right: 10,
-    zIndex: 1,
+    zIndex: 1
   },
   modalTitle: {
-    fontWeight: 'bold',
+    fontWeight: 600,
     fontSize: 18,
-    marginBottom: 10,
+    marginBottom: 10
   },
   modalThreadName: {
-    fontWeight: 'bold',
+    fontWeight: 600,
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 10
   },
   modalInput: {
     borderBottomWidth: 1,
     borderBottomColor: '#aaa',
     marginTop: 10,
-    fontSize: 16,
+    fontSize: 16
   },
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: 20
   },
   modalButton: {
     fontSize: 16,
-    color: '#000',
+    color: '#000'
   },
   bold: {
-    fontWeight: 'bold',
+    fontWeight: 600
   },
 });
