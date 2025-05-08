@@ -1,17 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, 
-  Keyboard, KeyboardAvoidingView, Platform} from 'react-native';
+import {
+  View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet,
+  TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import NotFoundScreen from '../+not-found';
+import { mockMessages } from '../shared/mockMessages';
+import { sellers } from '../shared/mockSellers';
 
-const placeholderThreads = [
-  { id: '1', name: 'Alice Johnson', message: 'Is the laptop still available?', date: '2025-04-23T18:00:00Z', pinned: false },
-  { id: '2', name: 'Bob Smith', message: 'I’ll take the sofa, how much for shipping?', date: '2025-04-22T14:30:00Z', pinned: false },
-  { id: '3', name: 'Charlie Nguyen', message: 'Do you accept PayPal for the camera?', date: '2025-04-20T09:15:00Z', pinned: false },
-  { id: '4', name: 'Dana Lopez', message: 'Is the bike in good condition? Can I pick it up today?', date: '2025-04-21T10:00:00Z', pinned: false },
-  { id: '5', name: 'Evan Walker', message: 'Will you sell the table for $50?', date: '2025-04-19T17:45:00Z', pinned: false },
-];
+const CURRENT_USER = 'ikeafan'; // update this to get the current user
 
 type Thread = {
   id: string;
@@ -22,83 +19,68 @@ type Thread = {
 };
 
 export default function MessagesScreen() {
-  const [threads, setThreads] = useState<Thread[]>(placeholderThreads);
-  const [selectedThread, setSelectedThread] = useState<Thread | null>(null);
+  const [threads, setThreads] = useState<Thread[]>([]);
   const [messageSearch, setMessageSearch] = useState('');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [renameInput, setRenameInput] = useState('');
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  useEffect(() => {
+    const generateThreads = () => {
+      const groupedThreads: { [key: string]: Thread } = {};
+
+      mockMessages.forEach((msg) => {
+        const key = [msg.sender, msg.recipient].sort().join('-');
+        const existingThread = groupedThreads[key];
+
+        const otherUser = msg.sender === CURRENT_USER ? msg.recipient : msg.sender;
+        const otherUserDetails = sellers.find(user => user.username === otherUser);
+        const userName = otherUserDetails ? otherUserDetails.name || otherUser : otherUser;
+
+        if (!existingThread || new Date(msg.sent_datetime) > new Date(existingThread.date)) {
+          groupedThreads[key] = {
+            id: key,
+            name: userName,
+            message: msg.message_body,
+            date: msg.sent_datetime,
+            pinned: false,
+          };
+        }
+      });
+
+      setThreads(Object.values(groupedThreads));
+      setLoading(false);
+    };
+
+    generateThreads();
+  }, []);
+
   const filteredThreads = threads
-    .filter(t => t.name.toLowerCase().includes(messageSearch.toLowerCase()))
+    .filter((t) => t.name.toLowerCase().includes(messageSearch.toLowerCase()))
     .sort((a, b) => (
-      a.pinned === b.pinned ? new Date(b.date).getTime() - new Date(a.date).getTime() : a.pinned ? -1 : 1 ));
-
-  const openModal = (thread: Thread) => {
-    setSelectedThread(thread);
-    setRenameInput(thread.name);
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedThread(null);
-    setRenameInput('');
-  };
-
-  const handleRename = () => {
-    if (selectedThread) {
-      setThreads(prev =>
-        prev.map(t => (t.id === selectedThread.id ? { ...t, name: renameInput } : t))
-      );
-      closeModal();
-    }
-  };
-
-  const handleTogglePin = () => {
-    if (selectedThread) {
-      setThreads(prev =>
-        prev.map(t => (t.id === selectedThread.id ? { ...t, pinned: !t.pinned } : t))
-      );
-      closeModal();
-    }
-  };
-
-  const handleDelete = () => {
-    if (selectedThread) {
-      setThreads(prev => prev.filter(t => t.id !== selectedThread.id));
-      closeModal();
-    }
-  };
+      a.pinned === b.pinned
+        ? new Date(b.date).getTime() - new Date(a.date).getTime()
+        : a.pinned ? -1 : 1
+    ));
 
   const renderItem = ({ item }: { item: Thread }) => (
     <TouchableOpacity
-      onPress={() => router.push(`/messages/${item.id}?name=${item.name}`)}
-      accessibilityRole="button"
-      accessibilityLabel={`Open conversation with ${item.name}`}
+      onPress={() => {
+        const otherUser = item.id.split('-').find(u => u !== CURRENT_USER) || 'unknown';
+        router.push(`/messages/${otherUser}?name=${item.name}`);
+      }}
     >
       <View style={[styles.item, item.pinned && styles.pinned]}>
-        <View
-          style={styles.messageAvatar}
-          accessibilityRole="image"
-          accessibilityLabel={`Avatar for ${item.name}`}
-        >
+        <View style={styles.messageAvatar}>
           <Text style={styles.avatarText}>
-            {item.name.split(' ').map((w: string) => w[0]).join('').toUpperCase()}
+            {item.name.split(' ').map((w) => w[0]).join('').toUpperCase()}
           </Text>
         </View>
         <View style={styles.content}>
-          <Text style={styles.name} accessibilityRole="text">{item.name}</Text>
-          <Text style={styles.message} accessibilityRole="text">{item.message}</Text>
-          <Text style={styles.date} accessibilityRole="text">
-            {new Date(item.date).toLocaleDateString()}
-          </Text>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.message}>{item.message}</Text>
+          <Text style={styles.date}>{new Date(item.date).toLocaleDateString()}</Text>
         </View>
-        <TouchableOpacity
-          onPress={() => openModal(item)}
-          accessibilityRole="button"
-          accessibilityLabel={`Manage options for conversation with ${item.name}`}
-        >
+        <TouchableOpacity onPress={() => { /* future menu */ }}>
           <MaterialIcons name="more-vert" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -119,83 +101,14 @@ export default function MessagesScreen() {
             style={styles.messageSearch}
             value={messageSearch}
             onChangeText={setMessageSearch}
-            accessibilityLabel="Search messages input"
           />
           <FlatList
             data={filteredThreads}
-            keyExtractor={item => item.id}
+            keyExtractor={(item) => item.id}
             renderItem={renderItem}
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
-            accessibilityLabel="List of message threads"
           />
-
-          {modalVisible && (
-            <TouchableWithoutFeedback onPress={closeModal}>
-              <View style={styles.modalOverlay}>
-                <TouchableWithoutFeedback>
-                  <View
-                    style={styles.modal}
-                    accessibilityLabel="Thread management modal"
-                  >
-                    <TouchableOpacity
-                      onPress={closeModal}
-                      style={styles.closeIcon}
-                      accessibilityRole="button"
-                      accessibilityLabel="Close modal"
-                    >
-                      <MaterialIcons name="close" size={24} color="black" />
-                    </TouchableOpacity>
-                    <Text style={styles.modalTitle} accessibilityRole="header">Manage Thread</Text>
-                    {selectedThread && (
-                      <>
-                        <Text
-                          style={styles.modalThreadName}
-                          accessibilityRole="text"
-                        >
-                          {selectedThread.name}
-                        </Text>
-                        <TextInput
-                          style={styles.modalInput}
-                          value={renameInput}
-                          onChangeText={setRenameInput}
-                          placeholder="New name"
-                          accessibilityLabel="Rename thread input"
-                        />
-                        <View style={styles.modalActions}>
-                          <TouchableOpacity
-                            onPress={handleRename}
-                            accessibilityRole="button"
-                            accessibilityLabel="Save new thread name"
-                          >
-                            <Text style={[styles.modalButton, styles.bold]}>Save</Text>
-                          </TouchableOpacity>
-                        </View>
-                        <View style={styles.modalActions}>
-                          <TouchableOpacity
-                            onPress={handleTogglePin}
-                            accessibilityRole="button"
-                            accessibilityLabel={selectedThread.pinned ? 'Unpin thread' : 'Pin thread'}
-                          >
-                            <Text style={styles.modalButton}>
-                              {selectedThread.pinned ? 'Unpin' : 'Pin'}
-                            </Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={handleDelete}
-                            accessibilityRole="button"
-                            accessibilityLabel="Delete thread"
-                          >
-                            <Text style={[styles.modalButton, { color: 'red' }]}>Delete</Text>
-                          </TouchableOpacity>
-                        </View>
-                      </>
-                    )}
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            </TouchableWithoutFeedback>
-          )}
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -237,7 +150,7 @@ const styles = StyleSheet.create({
     marginRight: 12
   },
   avatarText: {
-    fontWeight: 600,
+    fontWeight: '600',
     fontSize: 15,
     color: '#fff'
   },
@@ -261,10 +174,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    top: 0, bottom: 0, left: 0, right: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end'
   },
@@ -280,12 +190,12 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
   modalTitle: {
-    fontWeight: 600,
+    fontWeight: '600',
     fontSize: 18,
     marginBottom: 10
   },
   modalThreadName: {
-    fontWeight: 600,
+    fontWeight: '600',
     fontSize: 16,
     marginBottom: 10
   },
@@ -305,6 +215,6 @@ const styles = StyleSheet.create({
     color: '#000'
   },
   bold: {
-    fontWeight: 600
-  },
+    fontWeight: '600'
+  }
 });

@@ -32,3 +32,11 @@ export interface User {
   rating?: number;
   location?: string;
 }
+
+export interface Message {
+  id: number;
+  sender: string;
+  recipient: string;
+  message_body: string;
+  sent_datetime: string;
+}
