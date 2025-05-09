@@ -1,13 +1,20 @@
-import { useLocalSearchParams, useNavigation, Link } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useLayoutEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import {
+    View, Text, Image, StyleSheet, ScrollView, FlatList, TouchableOpacity,
+} from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { users } from '../shared/mockSellers';
 import { products } from '../shared/mockProducts';
+import { mockMessages } from '../shared/mockMessages';
+import { useRouter } from 'expo-router';
+
+const CURRENT_USER = 'ikeafan';
 
 export default function SellerProfile() {
     const { id } = useLocalSearchParams();
     const navigation = useNavigation();
+    const router = useRouter();
     const sellerId = parseInt(id as string, 10);
     const seller = users.find((s) => s.id === sellerId);
 
@@ -32,25 +39,45 @@ export default function SellerProfile() {
 
     const sellerProducts = products.filter((product) => product.seller === seller.username);
 
+    const handleMessagePress = () => {
+        const hasMessages = mockMessages.some(
+            (m) =>
+                (m.sender === CURRENT_USER && m.recipient === seller.username) ||
+                (m.sender === seller.username && m.recipient === CURRENT_USER)
+        );
+
+        if (!hasMessages) {
+            router.push(`/messages/${seller.username}`);
+        } else {
+            router.push(`/messages/${seller.username}`);
+        }
+    };
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.profileHeader}>
-                <Image source={{ uri: seller.image }} style={styles.image} accessibilityLabel={`Image of ${seller.name}`} />
+                <Image
+                    source={{ uri: seller.image }}
+                    style={styles.image}
+                    accessibilityLabel={`Image of ${seller.name}`}
+                />
                 <View style={styles.profileInfo}>
                     <Text style={styles.name}>{seller.name}</Text>
                     <Text style={styles.text}>{seller.location}</Text>
                     <Text style={styles.rating}>Rating: {seller.rating?.toFixed(1) || 'N/A'}</Text>
                     <Text style={styles.joinedDate}>
-                        Joined: {new Date(seller.createdDatetime).toLocaleString('default', { month: 'short', year: 'numeric' })}
+                        Joined:{' '}
+                        {new Date(seller.createdDatetime).toLocaleString('default', {
+                            month: 'short',
+                            year: 'numeric',
+                        })}
                     </Text>
                 </View>
             </View>
 
-            <Link href={`/messages/${seller.username}`} asChild>
-                <TouchableOpacity style={styles.messageButton}>
-                    <Text style={styles.messageButtonText}>Send Message</Text>
-                </TouchableOpacity>
-            </Link>
+            <TouchableOpacity style={styles.messageButton} onPress={handleMessagePress}>
+                <Text style={styles.messageButtonText}>Send Message</Text>
+            </TouchableOpacity>
 
             <Text style={styles.label}>{seller.name}'s Listings</Text>
 
@@ -60,13 +87,14 @@ export default function SellerProfile() {
                 keyExtractor={(item) => item.id.toString()}
                 numColumns={2}
                 renderItem={({ item }) => (
-                    <Link href={`/product/${item.id}`} asChild>
-                        <TouchableOpacity style={styles.productCard}>
-                            <Image source={{ uri: item.image }} style={styles.productImage} />
-                            <Text style={styles.productTitle}>{item.title}</Text>
-                            <Text style={styles.productPrice}>${item.price}</Text>
-                        </TouchableOpacity>
-                    </Link>
+                    <TouchableOpacity
+                        style={styles.productCard}
+                        onPress={() => router.push(`/product/${item.id}`)}
+                    >
+                        <Image source={{ uri: item.image }} style={styles.productImage} />
+                        <Text style={styles.productTitle}>{item.title}</Text>
+                        <Text style={styles.productPrice}>${item.price}</Text>
+                    </TouchableOpacity>
                 )}
             />
         </ScrollView>
