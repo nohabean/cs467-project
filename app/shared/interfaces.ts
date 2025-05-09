@@ -20,6 +20,7 @@ export interface ProductListing {
 }
 
 export interface User {
+  id: number;
   username: string;
   email: string | null;
   passwordHash: string;
