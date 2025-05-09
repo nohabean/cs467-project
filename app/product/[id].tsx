@@ -1,20 +1,34 @@
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useLayoutEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { products } from '../shared/mockProducts';
-import { sellers } from '../shared/mockSellers';
+import { users } from '../shared/mockSellers';
 import fallbackImage from '../../assets/images/fallback.png';
 
 export default function ProductDetail() {
     const navigation = useNavigation();
+    const router = useRouter();
     const { id } = useLocalSearchParams();
     const productId = parseInt(id as string, 10);
     const product = products.find((p) => p.id === productId);
 
+    const handleShare = () => {
+        console.log('handleShare() called');
+    };
+
+    const handleFavorite = () => {
+        console.log('handleFavorite() called');
+    };
+
     useLayoutEffect(() => {
         navigation.setOptions({
             title: '',
+             headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingLeft: 16 }}>
+                    <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+            ),
             headerRight: () => (
                 <View style={styles.header}>
                     <TouchableOpacity onPress={handleShare} accessibilityLabel="Share product listing" accessibilityRole="button">
@@ -35,17 +49,14 @@ export default function ProductDetail() {
             </View>
         );
     }
-    const seller = sellers.find((s) => s.username === product.seller);
 
+    const seller = users.find((s) => s.username === product.seller);
 
-    const handleShare = () => {
-        console.log('handleShare() called');
+    const handleSellerInfo = () => {
+        if (seller) {
+            router.push(`/user/${seller.id}`);
+        }
     };
-
-    const handleFavorite = () => {
-        console.log('handleFavorite() called');
-    };
-
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -72,19 +83,26 @@ export default function ProductDetail() {
 
             <Text style={styles.label}>Seller Info</Text>
             {seller ? (
-                <View style={styles.sellerInfoRow}>
-                    <Image source={{ uri: seller.image }} style={styles.sellerImage} defaultSource={fallbackImage} accessibilityLabel={`Image of ${seller.name}`} />
-                    <View style={styles.sellerDetailsContainer}>
-                        <Text style={styles.sellerName}>{seller.name}</Text>
-                        <Text style={styles.sellerMeta}>
-                            Joined: {new Date(seller.createdDatetime).toLocaleString('default', { month: 'short', year: 'numeric' })} | Rating: {seller.rating?.toFixed(1) || 'N/A'}
-                        </Text>
-                        <Text style={styles.sellerMeta}>{seller.location}</Text>
+                <TouchableOpacity onPress={handleSellerInfo} accessibilityLabel="View seller info" accessibilityRole="button">
+                    <View style={styles.sellerInfoRow}>
+                        <Image source={{ uri: seller.image }} style={styles.sellerImage} defaultSource={fallbackImage} accessibilityLabel={`Image of ${seller.name}`} />
+                        <View style={styles.sellerDetailsContainer}>
+                            <Text style={styles.sellerName}>{seller.name}</Text>
+                            <Text style={styles.sellerMeta}>
+                                Joined: {new Date(seller.createdDatetime).toLocaleString('default', { month: 'short', year: 'numeric' })} | Rating: {seller.rating?.toFixed(1) || 'N/A'}
+                            </Text>
+                            <Text style={styles.sellerMeta}>{seller.location}</Text>
+                        </View>
+                        <TouchableOpacity
+                            onPress={() => router.push(`/messages/new?sellerId=${seller.id}`)}
+                            accessibilityLabel="Message seller"
+                            accessibilityRole="button"
+                            style={styles.chatButton}
+                        >
+                            <Ionicons name="chatbox-ellipses" size={28} color="#ad5ff5" />
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity onPress={() => console.log('handleSellerInfo() called')} accessibilityLabel="View seller info" accessibilityRole="button">
-                        <Ionicons name="information-circle-outline" size={24} color="#555" style={{ marginLeft: 8 }} />
-                    </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
             ) : (
                 <Text style={styles.text}>Seller not found.</Text>
             )}
@@ -164,24 +182,6 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 12,
     },
-    sellerCard: {
-        padding: 12,
-        backgroundColor: '#f2f2f2',
-        borderRadius: 8,
-        marginTop: 8,
-    },
-    sellerDetails: {
-        fontSize: 15,
-        color: '#555',
-    },
-    sellerInfoContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 8,
-        backgroundColor: '#f9f9f9',
-        padding: 12,
-        borderRadius: 8,
-    },
     sellerName: {
         fontSize: 16,
         fontWeight: '600',
@@ -192,5 +192,11 @@ const styles = StyleSheet.create({
         color: '#555',
         marginBottom: 2,
     },
-
+    chatButton: {
+        padding: 10,
+        borderRadius: 10,
+        marginLeft: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
