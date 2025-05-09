@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { mockMessages } from '../shared/mockMessages';
-import { sellers } from '../shared/mockSellers';
+import { users } from '../shared/mockSellers';
 
 const CURRENT_USER = 'ikeafan'; // update this to get the current user
 
@@ -33,7 +33,7 @@ export default function MessagesScreen() {
     mockMessages.forEach(msg => {
       const key = [msg.sender, msg.recipient].sort().join('-');
       const otherUser = msg.sender === CURRENT_USER ? msg.recipient : msg.sender;
-      const otherUserDetails = sellers.find(user => user.username === otherUser);
+      const otherUserDetails = users.find(user => user.username === otherUser);
       const userName = otherUserDetails?.name || otherUser;
       const image = otherUserDetails?.image;
 
@@ -153,7 +153,7 @@ export default function MessagesScreen() {
           accessibilityRole="search"
         />
       </View>
-  
+
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -170,8 +170,7 @@ export default function MessagesScreen() {
             />
           </View>
         </TouchableWithoutFeedback>
-  
-        {/* Modal code remains the same */}
+
         {modalVisible && (
           <TouchableWithoutFeedback onPress={closeModal}>
             <View style={styles.modalOverlay}>
