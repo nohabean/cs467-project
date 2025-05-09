@@ -22,7 +22,7 @@ export default function SellerProfile() {
         navigation.setOptions({
             headerTitle: '',
             headerLeft: () => (
-                <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingLeft: 16 }}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingLeft: 16 }} accessibilityRole="button" accessibilityLabel="Go back">
                     <Ionicons name="arrow-back" size={24} color="black" />
                 </TouchableOpacity>
             ),
@@ -46,11 +46,7 @@ export default function SellerProfile() {
                 (m.sender === seller.username && m.recipient === CURRENT_USER)
         );
 
-        if (!hasMessages) {
-            router.push(`/messages/${seller.username}`);
-        } else {
-            router.push(`/messages/${seller.username}`);
-        }
+        router.push(`/messages/${seller.username}`);
     };
 
     return (
@@ -60,12 +56,19 @@ export default function SellerProfile() {
                     source={{ uri: seller.image }}
                     style={styles.image}
                     accessibilityLabel={`Image of ${seller.name}`}
+                    accessibilityRole="image"
                 />
                 <View style={styles.profileInfo}>
-                    <Text style={styles.name}>{seller.name}</Text>
-                    <Text style={styles.text}>{seller.location}</Text>
-                    <Text style={styles.rating}>Rating: {seller.rating?.toFixed(1) || 'N/A'}</Text>
-                    <Text style={styles.joinedDate}>
+                    <Text style={styles.name} accessibilityRole="text" accessibilityLabel={`Name: ${seller.name}`}>
+                        {seller.name}
+                    </Text>
+                    <Text style={styles.text} accessibilityRole="text" accessibilityLabel={`Location: ${seller.location}`}>
+                        {seller.location}
+                    </Text>
+                    <Text style={styles.rating} accessibilityRole="text" accessibilityLabel={`Rating: ${seller.rating?.toFixed(1) || 'N/A'}`}>
+                        Rating: {seller.rating?.toFixed(1) || 'N/A'}
+                    </Text>
+                    <Text style={styles.joinedDate} accessibilityRole="text" accessibilityLabel={`Joined date: ${new Date(seller.createdDatetime).toLocaleString('default', { month: 'short', year: 'numeric' })}`}>
                         Joined:{' '}
                         {new Date(seller.createdDatetime).toLocaleString('default', {
                             month: 'short',
@@ -75,11 +78,18 @@ export default function SellerProfile() {
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.messageButton} onPress={handleMessagePress}>
+            <TouchableOpacity 
+                style={styles.messageButton} 
+                onPress={handleMessagePress} 
+                accessibilityRole="button" 
+                accessibilityLabel="Send Message"
+            >
                 <Text style={styles.messageButtonText}>Send Message</Text>
             </TouchableOpacity>
 
-            <Text style={styles.label}>{seller.name}'s Listings</Text>
+            <Text style={styles.label} accessibilityRole="text" accessibilityLabel={`${seller.name}'s Listings`}>
+                {seller.name}'s Listings
+            </Text>
 
             <FlatList
                 contentContainerStyle={styles.productsList}
@@ -90,10 +100,21 @@ export default function SellerProfile() {
                     <TouchableOpacity
                         style={styles.productCard}
                         onPress={() => router.push(`/product/${item.id}`)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Product: ${item.title}, Price: $${item.price}`}
                     >
-                        <Image source={{ uri: item.image }} style={styles.productImage} />
-                        <Text style={styles.productTitle}>{item.title}</Text>
-                        <Text style={styles.productPrice}>${item.price}</Text>
+                        <Image 
+                            source={{ uri: item.image }} 
+                            style={styles.productImage} 
+                            accessibilityLabel={`Image of ${item.title}`}
+                            accessibilityRole="image"
+                        />
+                        <Text style={styles.productTitle} accessibilityRole="text" accessibilityLabel={`Title: ${item.title}`}>
+                            {item.title}
+                        </Text>
+                        <Text style={styles.productPrice} accessibilityRole="text" accessibilityLabel={`Price: $${item.price}`}>
+                            ${item.price}
+                        </Text>
                     </TouchableOpacity>
                 )}
             />
